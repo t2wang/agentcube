@@ -55,7 +55,9 @@ RUN pip install --no-cache-dir --break-system-packages \
     pillow \
     opencv-python-headless \
     imageio \
-    pypng
+    pypng \
+    tarfile \
+    datetime
 
 # Use /root/ as the working directory
 # We run as root to allow 'chattr +i' on the public key file (see pkg/picod/auth.go)
