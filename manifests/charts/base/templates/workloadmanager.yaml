@@ -31,8 +31,8 @@ spec:
           env:
             - name: REDIS_ADDR
               value: {{ .Values.redis.addr | quote }}
-            - name: REDIS_PASSWORD
-              value: {{ .Values.redis.password | quote }}
+            - name: REDIS_PASSWORD_FILE
+              value: "/etc/redis/auth/{{ .Values.redis.auth.passwordKey }}"
           args:
             - --port={{ .Values.workloadmanager.service.port }}
             - --runtime-class-name=
@@ -50,6 +50,14 @@ spec:
               port: {{ .Values.workloadmanager.service.port }}
             initialDelaySeconds: 5
             periodSeconds: 5
+          volumeMounts:
+            - name: redis-auth
+              mountPath: "/etc/redis/auth"
+              readOnly: true
+      volumes:
+        - name: redis-auth
+          secret:
+            secretName: {{ .Values.redis.auth.existingSecret }}
 
 ---
 apiVersion: v1

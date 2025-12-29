@@ -9,7 +9,11 @@ fullnameOverride: ""
 # These must be provided by the user during installation
 redis:
   addr: ""
-  password: ""
+  auth:
+    # Name of the existing secret
+    existingSecret: ""
+    # Key in the secret containing the password
+    passwordKey: "password"
 
 # AgentCube Router
 router:

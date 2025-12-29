@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"errors"
+	"os"
 	"testing"
 	"time"
 
@@ -36,6 +37,24 @@ func TestMakeRedisOptions(t *testing.T) {
 		expectedPwd := "test_redis_pwd"
 		t.Setenv("REDIS_ADDR", expectedAddr)
 		t.Setenv("REDIS_PASSWORD", expectedPwd)
+		opts, err := makeRedisOptions()
+		assert.NoError(t, err)
+		assert.NotNil(t, opts)
+		assert.Equal(t, expectedAddr, opts.Addr)
+		assert.Equal(t, expectedPwd, opts.Password)
+	})
+
+	t.Run("read password from file", func(t *testing.T) {
+		expectedAddr := "127.0.0.1:6379"
+		expectedPwd := "test_redis_pwd_from_file"
+		tmpFile := t.TempDir() + "/redis_password"
+		err := os.WriteFile(tmpFile, []byte(expectedPwd+" \n"), 0600)
+		assert.NoError(t, err)
+
+		t.Setenv("REDIS_ADDR", expectedAddr)
+		t.Setenv("REDIS_PASSWORD", "") // Ensure it's empty
+		t.Setenv("REDIS_PASSWORD_FILE", tmpFile)
+
 		opts, err := makeRedisOptions()
 		assert.NoError(t, err)
 		assert.NotNil(t, opts)

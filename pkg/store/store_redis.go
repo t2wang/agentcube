@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	redisv9 "github.com/redis/go-redis/v9"
@@ -42,6 +43,17 @@ func makeRedisOptions() (*redisv9.Options, error) {
 		return nil, fmt.Errorf("missing env var REDIS_ADDR")
 	}
 	redisPassword := os.Getenv("REDIS_PASSWORD")
+	if redisPassword == "" {
+		// try reading from file if env var is not set
+		if pwdFile := os.Getenv("REDIS_PASSWORD_FILE"); pwdFile != "" {
+			data, err := os.ReadFile(pwdFile)
+			if err != nil {
+				return nil, fmt.Errorf("read password file %s failed: %w", pwdFile, err)
+			}
+			redisPassword = strings.TrimSpace(string(data))
+		}
+	}
+
 	if redisPassword == "" {
 		return nil, fmt.Errorf("missing env var REDIS_PASSWORD")
 	}
