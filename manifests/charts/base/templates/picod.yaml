@@ -1,0 +1,17 @@
+apiVersion: runtime.agentcube.volcano.sh/v1alpha1
+kind: CodeInterpreter
+metadata:
+  name: simple-codeinterpreter
+  namespace: default
+spec:
+  maxSessionDuration: 8h
+  ports:
+  - pathPrefix: /
+    port: 8080
+    protocol: HTTP
+  sessionTimeout: 15m
+  template:
+    image: ghcr.io/volcano-sh/picod:latest
+    imagePullSecrets:
+    - name: default-secret
+  warmPoolSize: 3
